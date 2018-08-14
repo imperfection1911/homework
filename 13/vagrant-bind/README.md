@@ -21,7 +21,7 @@ A Bind's DNS lab with Vagrant and Ansible, based on CentOS 7.
 
 client
 
-<code>
+```
 [vagrant@client ~]$ dig web1.dns.lab
 
 ; <<>> DiG 9.9.4-RedHat-9.9.4-61.el7 <<>> web1.dns.lab
@@ -102,12 +102,12 @@ ns02.newdns.lab.	3600	IN	A	192.168.50.11
 ;; WHEN: Tue Aug 14 15:09:13 UTC 2018
 ;; MSG SIZE  rcvd: 145
 
-</code>
+```
 
 
 client2
 
-<code>
+```
 [vagrant@client2 ~]$ dig web1.dns.lab
 
 ; <<>> DiG 9.9.4-RedHat-9.9.4-61.el7 <<>> web1.dns.lab
@@ -186,4 +186,4 @@ ns02.dns.lab.		3600	IN	A	192.168.50.11
 ;; SERVER: 192.168.50.10#53(192.168.50.10)
 ;; WHEN: Tue Aug 14 15:11:26 UTC 2018
 ;; MSG SIZE  rcvd: 118
-</code>
+```
