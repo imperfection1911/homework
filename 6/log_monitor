@@ -1,0 +1,2 @@
+SEARCH_WORD="example"
+LOG_FILE=/var/log/messages

@@ -1,0 +1,72 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+ :server => {
+	:box_name => "centos/7",
+	:net => [
+		  {ip:'192.168.1.2', adapter: 2, netmask: '255.255.255.0', virtualbox__intnet: "vpn"}
+		]
+},  
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+
+    config.vm.define boxname do |box|
+
+        box.vm.box = boxconfig[:box_name]
+        box.vm.host_name = boxname.to_s
+
+        boxconfig[:net].each do |ipconf|
+          box.vm.network "private_network", ipconf
+        end
+        
+        if boxconfig.key?(:public)
+          box.vm.network "public_network", boxconfig[:public]
+        end
+
+        box.vm.provision "shell", inline: <<-SHELL
+          mkdir -p ~root/.ssh
+                cp ~vagrant/.ssh/auth* ~root/.ssh
+		# срипач не нужен
+		setenforce 0
+		systemctl stop firewalld
+		systemctl disable firewalld
+		systemctl mask firewalld
+		yum install -y epel-release
+		yum install -y openvpn
+		yum install -y easy-rsa
+        SHELL
+        
+        case boxname.to_s
+	when "server"
+	 box.vm.provision "shell", run: "always", inline: <<-SHELL
+		echo net.ipv4.conf.all.forwarding=1 >> /etc/sysctl.conf
+		echo net.ipv4.ip_forward=1 >> /etc/sysctl.conf
+		sysctl -p /etc/sysctl.conf
+		systemctl restart network
+		cp /vagrant/server.conf /etc/openvpn/
+		iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+		cd /usr/share/easy-rsa/3
+		./easyrsa init-pki
+		echo "openvpn" | ./easyrsa build-ca nopass
+		echo "openvpn" | ./easyrsa gen-req server nopass
+		echo "yes" | ./easyrsa sign-req server server
+		./easyrsa gen-dh
+		mkdir /etc/openvpn/keys
+		for i in ./pki/ca.crt ./pki/private/ca.key ./pki/issued/server.crt ./pki/private/server.key ./pki/dh.pem; do cp $i /etc/openvpn/keys/ ; done;
+		systemctl start openvpn@server
+		echo "client" | ./easyrsa gen-req client nopass
+		echo "yes" | ./easyrsa sign-req client client
+		mkdir /root/client
+		for i in ./pki/issued/client.crt ./pki/private/client.key ./pki/ca.crt; do cp $i /root/client ; done
+		tar -cvzf /root/client.tar.gz /root/client/ 	 	
+		SHELL
+        end
+end
+end
+end

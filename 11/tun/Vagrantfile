@@ -1,0 +1,69 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+ :server => {
+	:box_name => "centos/7",
+	:net => [
+		  {ip:'192.168.1.2', adapter: 2, netmask: '255.255.255.0', virtualbox__intnet: "vpn"}
+		]
+},  
+ :client => {
+	:box_name => "centos/7",
+	:net => [
+		  {ip: '192.168.1.3', adapter: 2, netmask: '255.255.255.0', virtualbox__intnet: "vpn"}
+		]
+},
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+
+    config.vm.define boxname do |box|
+
+        box.vm.box = boxconfig[:box_name]
+        box.vm.host_name = boxname.to_s
+
+        boxconfig[:net].each do |ipconf|
+          box.vm.network "private_network", ipconf
+        end
+        
+        if boxconfig.key?(:public)
+          box.vm.network "public_network", boxconfig[:public]
+        end
+
+        box.vm.provision "shell", inline: <<-SHELL
+          mkdir -p ~root/.ssh
+                cp ~vagrant/.ssh/auth* ~root/.ssh
+		# срипач не нужен
+		setenforce 0
+		systemctl stop firewalld
+		systemctl disable firewalld
+		systemctl mask firewalld
+		yum install -y epel-release
+		yum install -y openvpn
+        SHELL
+        
+        case boxname.to_s
+	when "server"
+	 box.vm.provision "shell", run: "always", inline: <<-SHELL
+		echo -e "dev tun\nifconfig 10.10.10.1 10.10.10.2\ncomp-lzo\nsecret /etc/openvpn/keys/static.key\nstatus /var/log/openvpn-status.log\nlog /var/log/openvpn.log\nverb 3" > /etc/openvpn/server.conf
+		mkdir /etc/openvpn/keys
+		cp /vagrant/static.key /etc/openvpn/keys
+		systemctl start openvpn@server	 	
+		SHELL
+	when "client"
+	 box.vm.provision "shell", run: "always", inline: <<-SHELL
+		echo -e "dev tun\nremote 192.168.1.2\nifconfig 10.10.10.2 10.10.10.1\nsecret /etc/openvpn/keys/static.key\ncomp-lzo\nstatus /var/log/openvpn-status.log\nlog /var/log/openvpn.log\nverb 3" > /etc/openvpn/client.conf
+		mkdir /etc/openvpn/keys
+		cp /vagrant/static.key /etc/openvpn/keys
+		systemctl start openvpn@client 
+		SHELL
+
+        end
+end
+end
+end

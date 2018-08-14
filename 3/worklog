@@ -1,0 +1,109 @@
+1. У нас xfs, которую как известно уменьшить нельзя.добавляю новый диск через vagrantfile
+2. нарезаю на нем 1 партицию gdisk. создаю файловую систему mkfs.xfs /dev/sb1
+3. монтирую в /mnt/dump. mount /dev/sdb1 /mnt/dump
+4. ставлю xfsdump. yum -y install xfsdump
+5. делаю дамп xfsdump -f /mnt/dump/dump /dev/mapper/VolGroup00-LogVol00
+6. Тушу vm vagrant halt, Качаю minimal iso centos7 и гружусь с него в virtualbox. Жму f12, выбираю 
+troubleshouting, rescue a centos system, жму 3(нам нужно чтобы ничего не смонтировалось) попадаю в shell
+7. vgchange -ay. Тома становятся доступны.
+8. удаляю наконец то рутовый том lvremove /dev/mapper/VolGroup00-LogVol00
+9. монтирую диск с дампом. mkdir /mnt/dump && mount /dev/sdb1 /mnt/dump
+10. Создаю новый lvm со старым названием.
+lvcreate -L 8G -n LogVol00 VolGroup00
+11. Делаю на нем xfs
+mkfs.xfs /dev/mapper/VolGroup00-LogVol00
+12.Монтирую mkdir /mnt/root && mount /dev/mapper/VolGroup00-LogVol00
+13. Восстанавливаю фс из дампа.
+xfsrestore -f /mnt/dump/dump /mnt/root
+14. перезагружаюсь. Проверяю
+[root@otuslinux vagrant]# df -h
+Filesystem                       Size  Used Avail Use% Mounted on
+/dev/mapper/VolGroup00-LogVol00  8.0G  685M  7.4G   9% /
+devtmpfs                         488M     0  488M   0% /dev
+tmpfs                            497M     0  497M   0% /dev/shm
+tmpfs                            497M  6.6M  490M   2% /run
+tmpfs                            497M     0  497M   0% /sys/fs/cgroup
+/dev/sda2                       1014M   63M  952M   7% /boot
+tmpfs                            100M     0  100M   0% /run/user/1000
+1 задача выполнена.
+15. Выделяю том под home
+lvcreate -L 8G -n LogVol02 VolGroup00
+16.Создаю фс
+mkfs.ext4 /dev/mapper/VolGroup00-LogVol02
+17.копирую в /mnt/dump (диск с дампом / фс уже отмонтирован) содержимое home
+cp -R /home/* /mnt/dump/
+[root@otuslinux vagrant]# ls /mnt/dump/
+vagrant
+18. Прописываю новый том в fstab
+
+[root@otuslinux vagrant]# cat /etc/fstab 
+
+#
+# /etc/fstab
+# Created by anaconda on Tue Apr  3 21:42:15 2018
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk'
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+#
+/dev/mapper/VolGroup00-LogVol00 /                       xfs     defaults        0 0
+/dev/mapper/VolGroup00-LogVol02 /home                   ext4    defaults        0 0
+UUID=a9953552-87ca-4e1c-972e-fb484ce749fe /boot                   xfs     defaults        0 0
+/dev/mapper/VolGroup00-LogVol01 swap                    swap    defaults        0 0
+
+19. монтирую и копирую данные обратно.
+mount -a
+cp -R /mnt/dump/* /home
+
+Вторая задача выполнена
+
+[root@otuslinux vagrant]# df -h
+Filesystem                       Size  Used Avail Use% Mounted on
+/dev/mapper/VolGroup00-LogVol00  8.0G  685M  7.4G   9% /
+devtmpfs                         488M     0  488M   0% /dev
+tmpfs                            497M     0  497M   0% /dev/shm
+tmpfs                            497M  6.6M  490M   2% /run
+tmpfs                            497M     0  497M   0% /sys/fs/cgroup
+/dev/sda2                       1014M   63M  952M   7% /boot
+tmpfs                            100M     0  100M   0% /run/user/1000
+tmpfs                            100M     0  100M   0% /run/user/0
+/dev/mapper/VolGroup00-LogVol02  7.8G   37M  7.3G   1% /home
+
+
+20. При ребуте понимаю, что где то накосячил с ключами.
+обнаруживаю, что по совершенно непонятным причинам не работает rd.break в конфиге grub. Гружусь с livecd, делаю chroot на /mnt/sysimage и меняю рутовый пароль. Делаю chown -R vagrant:vagrant на /home/vagrant.
+и все равно permission denied, права правильные. Оказалось selinux(((
+
+21.Добавил второй диск в virtualbox.
+Нарезал партиции. Поставил тип Linux LVM. На 8300 работает lvm?
+22. Создаю pv под зеркало 
+pvcreate /dev/sdb1 /dev/sdc1
+23. Создаю vg vgcreate mirror /dev/sdb1 /dev/sdc1
+24. Создаю lv lvcreate -L 15G -m1 -n VolGroup03 mirror
+25. mkfs.ext4 /dev/mapper/mirror-VolGroup03
+26. Обнаруживаю что опечатался в названии тома. Переименовываю lvrename /dev/mirror/VolGroup03 /dev/mirror/LogVol03. Копирую данные var в каталог в /mnt, прописываю в fstab, монтирую, копирую обратно.
+[root@otuslinux vagrant]# df -h
+Filesystem                       Size  Used Avail Use% Mounted on
+/dev/mapper/VolGroup00-LogVol00  8.0G  784M  7.3G  10% /
+devtmpfs                         488M     0  488M   0% /dev
+tmpfs                            497M     0  497M   0% /dev/shm
+tmpfs                            497M  6.6M  490M   2% /run
+tmpfs                            497M     0  497M   0% /sys/fs/cgroup
+/dev/sda2                       1014M   63M  952M   7% /boot
+/dev/mapper/VolGroup00-LogVol02  7.8G   37M  7.3G   1% /home
+/dev/mapper/mirror-LogVol03       15G  139M   14G   1% /var
+tmpfs                            100M     0  100M   0% /run/user/1000
+27. Создал кучку файлов в home
+for i in {1..10}; do touch /home/file$i; done
+28. Создаю снапшот
+lvcreate -L 1G -s -n hsnapshot /dev/mapper/VolGroup00-LogVol02
+29. Удаляю пару файлов.
+Восстанавливаюсь
+Забыл отмонтировать /home перед merge.
+[root@otuslinux vagrant]# lvconvert --merge /dev/mapper/VolGroup00-hsnapshot
+  Can't merge until origin volume is closed.
+  Merging of snapshot VolGroup00/hsnapshot will occur on next activation of VolGroup00/LogVol02.
+реактивирую том
+[root@otuslinux /]# lvchange -an /dev/VolGroup00/LogVol02 
+[root@otuslinux /]# lvchange -ay /dev/VolGroup00/LogVol02
+merge срабатывает автоматически. Снапшот удалился сам оО
+Удаленный файл восстановился.

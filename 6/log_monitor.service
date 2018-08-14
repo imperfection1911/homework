@@ -1,0 +1,8 @@
+[Unit]
+Description=simple log monitoring
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/sysconfig/log_monitor
+ExecStart=/bin/bash /home/toha/homework/6/log_monitor.sh $SEARCH_WORD $LOG_FILE
+ExecStop=/bin/kill ${MAINPID}

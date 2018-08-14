@@ -1,0 +1,10 @@
+2018-05-14 17:00:00,004 SEVERE [ru.iflex.esb.OTTOperations] (Thread-24281 (HornetQ-client-global-threads-2006071591)) DeactivateService: 577586653492816412
+2018-05-14 17:00:00,012 INFO  [statistics] (default task-50) deactivateService: System: unknown; All time: 17; success: true
+2018-05-14 17:00:00,013 INFO  [ru.iflex.esb.direct.DirectJMSTimer] (EJB default - 228) JMSStatistics: [direct:0]
+2018-05-14 17:00:00,015 INFO  [org.apache.cxf.service.factory.ReflectionServiceFactoryBean] (Thread-24281 (HornetQ-client-global-threads-2006071591)) Creating Service {http://tricolor.gmcs.ru/xrm}LegalCustomerManagement from WSDL: vfs:/content/ott-ear-1702.2.10.ear/lib/soap-client-crm-1702.2.1.jar/META-INF/LegalCustomerManagement/LegalCustomerManagement_1.wsdl
+2018-05-14 17:00:00,019 INFO  [org.apache.cxf.service.factory.ReflectionServiceFactoryBean] (default task-74) Creating Service {http://billing.nsc.ru/}BillingOperations from WSDL: vfs:/content/mobile-api-ear-1702.2.6.ear/mobile-api-web-1702.2.6.war/WEB-INF/lib/soap-client-esb-1702.2.0.jar/META-INF/wsdl/BillingOperations/BillingOperations.wsdl
+2018-05-14 17:00:00,117 INFO  [ru.iflex.esb.ott.orchestration.listener.DeactivateServiceListener] (Thread-24281 (HornetQ-client-global-threads-2006071591)) DeactivateService: System: esb; initiator: timer; All time: 111; success: true
+2018-05-14 17:00:00,137 SEVERE [ru.iflex.esb.billing.BillingOperationsBean] (default task-7) GetCreditInformation: DEVICE (33040902902115)
+2018-05-14 17:00:00,138 INFO  [statistics] (default task-7) getCreditInformation: System: lka; initiator: 33040902902115; All time: 2; success: true
+2018-05-14 17:00:00,140 SEVERE [ru.iflex.esb.OTTOperationsBean] (default task-76) activateService: actionId=577586653508143891; smartCardId=30002316032166; serviceId=S$003; startDate=2018-05-14T16:59:58.443; stopDate=2018-06-14T16:59:58.443
+2018-05-14 17:00:00,141 SEVERE [ru.iflex.esb.OTTOperationsBean] (default task-76) Send to JMS: ActivateService: 30002316032166, S$003, 2018-05-14T16:59:58.443, 2018-06-14T16:59:58.443

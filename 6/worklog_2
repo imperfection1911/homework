@@ -1,0 +1,90 @@
+Скрипт запущен Пн 28 май 2018 18:06:44
+]0;root@vm1:/home/toha/homework/6[?1034h[root@vm1 6]# cat /etc/systemd/serv[K[K[Kystem/spawn-fcgi.service 
+[Unit]
+Description=Spawn FastCGI scripts to be used by web servers
+After=network.target remote-fs.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/sysconfig/spawn-fcgi
+ExecStart=/usr/bin/spawn-fcgi -n $OPTIONS
+ExecStop=/bin/kill ${MAINPID}
+]0;root@vm1:/home/toha/homework/6[root@vm1 6]# systemctls [K[K statuis[K[Ks spawn-fcgi.service [K[K[K[K[K[K[K[K[K
+● spawn-fcgi.service - Spawn FastCGI scripts to be used by web servers
+   Loaded: loaded (/etc/systemd/system/spawn-fcgi.service; static; vendor preset: disabled)
+   Active: inactive (dead)
+
+май 28 17:59:26 vm1 systemd[1]: [1;39mUnit spawn-fcgi.service entered failed state.[0m
+май 28 17:59:26 vm1 systemd[1]: [1;39mspawn-fcgi.service failed.[0m
+май 28 18:01:11 vm1 systemd[1]: Started Spawn FastCGI scripts to be used by web servers.
+май 28 18:01:11 vm1 systemd[1]: Starting Spawn FastCGI scripts to be used by web servers...
+май 28 18:01:21 vm1 systemd[1]: Stopping Spawn FastCGI scripts to be used by web servers...
+май 28 18:01:21 vm1 systemd[1]: Stopped Spawn FastCGI scripts to be used by web servers.
+май 28 18:05:01 vm1 systemd[1]: Started Spawn FastCGI scripts to be used by web servers.
+май 28 18:05:01 vm1 systemd[1]: Starting Spawn FastCGI scripts to be used by web servers...
+май 28 18:05:09 vm1 systemd[1]: Stopping Spawn FastCGI scripts to be used by web servers...
+май 28 18:05:10 vm1 systemd[1]: Stopped Spawn FastCGI scripts to be used by web servers.
+]0;root@vm1:/home/toha/homework/6[root@vm1 6]# systemctl status spawn-fcgi[1P spawn-fcgi[1P spawn-fcgi[1P spawn-fcgir spawn-fcgit spawn-fcgi[C[C[C[C[C[C[C[C[C[C[C
+]0;root@vm1:/home/toha/homework/6[root@vm1 6]# systemctl start spawn-fcgi[1@tus[C[C[C[C[C[C[C[C[C[C[C
+[1;32m●[0m spawn-fcgi.service - Spawn FastCGI scripts to be used by web servers
+   Loaded: loaded (/etc/systemd/system/spawn-fcgi.service; static; vendor preset: disabled)
+   Active: [1;32mactive (running)[0m since Пн 2018-05-28 18:07:23 MSK; 1s ago
+ Main PID: 116987 (php-cgi)
+   Memory: 6.2M
+   CGroup: /system.slice/spawn-fcgi.service
+           ├─116987 /usr/bin/php-cgi
+           ├─116989 /usr/bin/php-cgi
+           ├─116990 /usr/bin/php-cgi
+           ├─116991 /usr/bin/php-cgi
+           ├─116992 /usr/bin/php-cgi
+           ├─116993 /usr/bin/php-cgi
+           ├─116994 /usr/bin/php-cgi
+           ├─116995 /usr/bin/php-cgi
+           ├─116996 /usr/bin/php-cgi
+           ├─116997 /usr/bin/php-cgi
+           ├─116998 /usr/bin/php-cgi
+           ├─116999 /usr/bin/php-cgi
+           ├─117000 /usr/bin/php-cgi
+           ├─117001 /usr/bin/php-cgi
+           ├─117002 /usr/bin/php-cgi
+           ├─117003 /usr/bin/php-cgi
+           ├─117004 /usr/bin/php-cgi
+           ├─117005 /usr/bin/php-cgi
+           ├─117006 /usr/bin/php-cgi
+           ├─117007 /usr/bin/php-cgi
+           ├─117008 /usr/bin/php-cgi
+           ├─117009 /usr/bin/php-cgi
+           ├─117010 /usr/bin/php-cgi
+           ├─117011 /usr/bin/php-cgi
+           ├─117012 /usr/bin/php-cgi
+           ├─117013 /usr/bin/php-cgi
+           ├─117014 /usr/bin/php-cgi
+           ├─117015 /usr/bin/php-cgi
+           ├─117016 /usr/bin/php-cgi
+           ├─117017 /usr/bin/php-cgi
+           ├─117018 /usr/bin/php-cgi
+           ├─117019 /usr/bin/php-cgi
+           └─117020 /usr/bin/php-cgi
+
+май 28 18:07:23 vm1 systemd[1]: Started Spawn FastCGI scripts to be used by web servers.
+май 28 18:07:23 vm1 systemd[1]: Starting Spawn FastCGI scripts to be used by web servers...
+]0;root@vm1:/home/toha/homework/6[root@vm1 6]# systemctl status spawn-fcgi[1Prt[C[C[C[C[C[C[C[C[C[C[C[1@tus[C[C[C[C[C[C[C[C[C[C[C[1Prt[C[C[C[C[C[C[C[C[C[C[C[C[1P spawn-fcgi[1P spawn-fcgi[1P spawn-fcgio spawn-fcgip spawn-fcgi[C[C[C[C[C[C[C[C[C[C[C
+]0;root@vm1:/home/toha/homework/6[root@vm1 6]# systemctl stop spawn-fcgi[1P spawn-fcgi[1P spawn-fcgia spawn-fcgit spawn-fcgiu spawn-fcgis spawn-fcgi[C[C[C[C[C[C[C[C[C[C[C
+● spawn-fcgi.service - Spawn FastCGI scripts to be used by web servers
+   Loaded: loaded (/etc/systemd/system/spawn-fcgi.service; static; vendor preset: disabled)
+   Active: inactive (dead)
+
+май 28 18:01:21 vm1 systemd[1]: Stopping Spawn FastCGI scripts to be used by web servers...
+май 28 18:01:21 vm1 systemd[1]: Stopped Spawn FastCGI scripts to be used by web servers.
+май 28 18:05:01 vm1 systemd[1]: Started Spawn FastCGI scripts to be used by web servers.
+май 28 18:05:01 vm1 systemd[1]: Starting Spawn FastCGI scripts to be used by web servers...
+май 28 18:05:09 vm1 systemd[1]: Stopping Spawn FastCGI scripts to be used by web servers...
+май 28 18:05:10 vm1 systemd[1]: Stopped Spawn FastCGI scripts to be used by web servers.
+май 28 18:07:23 vm1 systemd[1]: Started Spawn FastCGI scripts to be used by web servers.
+май 28 18:07:23 vm1 systemd[1]: Starting Spawn FastCGI scripts to be used by web servers...
+май 28 18:07:31 vm1 systemd[1]: Stopping Spawn FastCGI scripts to be used by web servers...
+май 28 18:07:31 vm1 systemd[1]: Stopped Spawn FastCGI scripts to be used by web servers.
+]0;root@vm1:/home/toha/homework/6[root@vm1 6]# exit
+exit
+
+Скрипт выполнен Пн 28 май 2018 18:07:38

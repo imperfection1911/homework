@@ -1,0 +1,61 @@
+Скрипт запущен Пн 28 май 2018 16:58:19
+]0;root@vm1:/home/toha/homework/6[?1034h[root@vm1 6]# cat log_monitor.s[Ks
+log_monitor.service  log_monitor.sh       
+[root@vm1 6]# cat log_monitor.s
+log_monitor.service  log_monitor.sh       
+[root@vm1 6]# cat log_monitor.sh 
+#!
+while true
+ do
+  cmd=`grep $1 $2`
+  if [ ! -z "$cmd" ]
+   then
+   logger -p info "$cmd"
+  fi
+  sleep 30
+done
+]0;root@vm1:/home/toha/homework/6[root@vm1 6]# cat log_monitor.sh [K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kecho[K[K[K[Kcat /lost+found/[K[K[K[K[K[K[K[K[K[K[K[Klog_monitor
+SEARCH_WORD="example"
+LOG_FILE=/var/log/messages
+]0;root@vm1:/home/toha/homework/6[root@vm1 6]# cat log_monitor.service 
+[Unit]
+Description=simple log monitoring
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/sysconfig/log_monitor
+ExecStart=/bin/bash /home/toha/homework/6/log_monitor.sh $SEARCH_WORD $LOG_FILE
+ExecStop=/bin/kill ${MAINPID}
+]0;root@vm1:/home/toha/homework/6[root@vm1 6]# systemctl start log_monitor
+]0;root@vm1:/home/toha/homework/6[root@vm1 6]# systemctl start log_monitor[C[1P log_monitor[1P log_monitort log_monitoru log_monitors log_monitor[C[C[C[C[C[C[C[C[C[C[C[C
+[1;32m●[0m log_monitor.service - simple log monitoring
+   Loaded: loaded (/etc/systemd/system/log_monitor.service; static; vendor preset: disabled)
+   Active: [1;32mactive (running)[0m since Пн 2018-05-28 16:59:08 MSK; 5s ago
+ Main PID: 116244 (bash)
+   Memory: 296.0K
+   CGroup: /system.slice/log_monitor.service
+           ├─116244 /bin/bash /home/toha/homework/6/log_monitor.sh example /var/log/messages
+           └─116247 sleep 30
+
+май 28 16:59:08 vm1 systemd[1]: Started simple log monitoring.
+май 28 16:59:08 vm1 systemd[1]: Starting simple log monitoring...
+]0;root@vm1:/home/toha/homework/6[root@vm1 6]# systemctl status log_monitor[1P log_monitor[1P log_monitor[1P log_monitor[1P log_monitoro log_monitorp log_monitor[C[C[C[C[C[C[C[C[C[C[C[C
+]0;root@vm1:/home/toha/homework/6[root@vm1 6]# systemctl stop log_monitor[2@atus[C[C[C[C[C[C[C[C[C[C[C[C
+● log_monitor.service - simple log monitoring
+   Loaded: loaded (/etc/systemd/system/log_monitor.service; static; vendor preset: disabled)
+   Active: inactive (dead)
+
+май 28 16:50:13 vm1 systemd[1]: [1;39mUnit log_monitor.service entered failed state.[0m
+май 28 16:50:13 vm1 systemd[1]: [1;39mlog_monitor.service failed.[0m
+май 28 16:52:36 vm1 systemd[1]: Started simple log monitoring.
+май 28 16:52:36 vm1 systemd[1]: Starting simple log monitoring...
+май 28 16:52:55 vm1 systemd[1]: Stopping simple log monitoring...
+май 28 16:52:55 vm1 systemd[1]: Stopped simple log monitoring.
+май 28 16:59:08 vm1 systemd[1]: Started simple log monitoring.
+май 28 16:59:08 vm1 systemd[1]: Starting simple log monitoring...
+май 28 16:59:20 vm1 systemd[1]: Stopping simple log monitoring...
+май 28 16:59:20 vm1 systemd[1]: Stopped simple log monitoring.
+]0;root@vm1:/home/toha/homework/6[root@vm1 6]# exit
+exit
+
+Скрипт выполнен Пн 28 май 2018 16:59:27

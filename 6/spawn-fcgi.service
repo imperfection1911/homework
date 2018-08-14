@@ -1,0 +1,9 @@
+[Unit]
+Description=Spawn FastCGI scripts to be used by web servers
+After=network.target remote-fs.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/sysconfig/spawn-fcgi
+ExecStart=/usr/bin/spawn-fcgi -n $OPTIONS
+ExecStop=/bin/kill ${MAINPID}
