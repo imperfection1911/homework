@@ -8,14 +8,14 @@ MACHINES = {
         :box_name => "centos/6",
         #:public => {:ip => '10.10.10.1', :adapter => 1},
         :net => [
-                   {ip: '192.168.255.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
+                   {ip: '192.168.255.1', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "router-net"},
                 ]
   },
 
 :inetRouter2 => {
-	:box_name => "centos/7",
+	:box_name => "centos/7",	
 	:net => [
-		   {ip: '192.168.255.3', adapter:2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
+		   {ip: '192.168.255.3', adapter:2, netmask: "255.255.255.240", virtualbox__intnet: "router-net"},
 		]
 
  },
@@ -23,7 +23,7 @@ MACHINES = {
   :centralRouter => {
         :box_name => "centos/7",
         :net => [
-                   {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
+                   {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "router-net"},
                    {ip: '192.168.0.1', adapter: 3, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
                    {ip: '192.168.0.33', adapter: 4, netmask: "255.255.255.240", virtualbox__intnet: "hw-net"},
                    {ip: '192.168.0.65', adapter: 5, netmask: "255.255.255.192", virtualbox__intnet: "mgt-net"},
@@ -83,11 +83,17 @@ Vagrant.configure("2") do |config|
 	    service sshd restart
             SHELL
 	when "inetRouter2"
+	  box.vm.network 'forwarded_port', guest: 8080, host: 8080, host_ip: '127.0.0.1'
 	  box.vm.provision "shell", run: "always", inline: <<-SHELL
 	    sysctl net.ipv4.conf.all.forwarding=1
-	    ip route add 192.168.0.0/16 via 192.168.255.2
-	    yum -y install nmap
 	    systemctl stop firewalld
+	    ip route add 192.168.0.0/16 via 192.168.255.2
+	    iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+	    yum -y install nmap
+	    iptables -A FORWARD -d 192.168.0.2/32 -i eth0 -o eth1 -p tcp -m tcp --dport 80 -j ACCEPT
+	    iptables -t nat -A PREROUTING  -d 10.0.2.15/32 -p tcp -m tcp --dport 8080 -j DNAT --to-destination 192.168.0.2:80
+	    iptables -t nat -A OUTPUT -d 10.0.2.15/32 -p tcp -m tcp --dport 80 -j DNAT --to-destination 192.168.0.2
+	    iptables -t nat -A POSTROUTING -d 192.168.0.2/32 -p tcp -m tcp --dport 80 -j SNAT --to-source 192.168.255.3
 	    SHELL
         when "centralRouter"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
