@@ -1,0 +1,11 @@
+#!/bin/bash
+USER=$PAM_USER
+gr=$(groups $USER | grep -P '\sadmin($|\s)')
+if [ -n "$gr" ]; then
+	exit 0
+fi
+DAY=$(date +"%u")
+if [ $DAY -lt 6 ]; then
+	exit 0
+fi
+exit 1
