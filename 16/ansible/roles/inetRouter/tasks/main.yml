@@ -1,0 +1,31 @@
+---
+ - name: add route
+   net_static_route:
+     prefix: 192.168.0.0
+     mask: 255.255.0.0
+     next_hop: 192.168.255.2
+     state: present
+ - name: enable forwarding
+   sysctl:
+     name: net.ipv4.conf.all.forwarding
+     value: 1
+     state: present
+     reload: yes
+
+ - name: enable ssh password auth
+   lineinfile:
+     path: /etc/ssh/sshd_config
+     regexp: 'PasswordAuthentication no'
+     line: 'PasswordAuthentication yes'
+ - name: restart sshd
+   service:
+     name: sshd
+     state: restarted
+ - name: copy knockport rules
+   copy:
+     src: iptables.rules
+     dest: /vagrant/iptables.rules
+ - name: enable iptables rules
+   shell: iptables-restore < /vagrant/iptables.rules
+ - name: masquerade
+   shell: iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE 

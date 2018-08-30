@@ -1,0 +1,29 @@
+- name: enable forwarding
+  sysctl:
+    name: net.ipv4.conf.all.forwarding
+    value: 1
+    state: present
+- name: fuck firewalld
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+    masked: yes
+- name: install nmap
+  yum:
+    name: nmap
+    state: latest
+- name: add route
+  net_static_route:
+    prefix: 192.168.0.0
+    mask: 255.255.0.0
+    next_hop: 192.168.255.2
+    state: present
+- name: masquerade
+  shell: iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+- name: prerouting dnat
+  shell: iptables -t nat -A PREROUTING  -d 10.0.2.15/32 -p tcp -m tcp --dport 8080 -j DNAT --to-destination 192.168.0.2:80
+- name: output dnat
+  shell: iptables -t nat -A OUTPUT -d 10.0.2.15/32 -p tcp -m tcp --dport 80 -j DNAT --to-destination 192.168.0.2
+- name: postrouting snat
+  shell: iptables -t nat -A OUTPUT -d 10.0.2.15/32 -p tcp -m tcp --dport 80 -j DNAT --to-destination 192.168.0.2

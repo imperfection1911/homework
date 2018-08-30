@@ -1,0 +1,5 @@
+- hosts: centralServer
+  user: root
+  become: yes
+  roles:
+- centralServer 

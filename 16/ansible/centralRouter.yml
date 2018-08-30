@@ -1,0 +1,5 @@
+- hosts: centralRouter
+  user: root
+  become: yes
+  roles:
+- centralRouter

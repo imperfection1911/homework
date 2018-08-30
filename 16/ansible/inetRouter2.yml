@@ -1,0 +1,5 @@
+- hosts: inetRouter2
+  user: root
+  become: yes
+  roles:
+- inetRouter2
