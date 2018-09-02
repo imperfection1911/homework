@@ -2,4 +2,4 @@
   user: root
   become: yes
   roles:
-- inetRouter2
+    - inetRouter2

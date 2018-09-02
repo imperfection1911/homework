@@ -69,6 +69,7 @@ Vagrant.configure("2") do |config|
           mkdir -p ~root/.ssh
                 cp ~vagrant/.ssh/auth* ~root/.ssh
 	  setenforce 0
+          yum -y install libselinux-python
         SHELL
         
         case boxname.to_s
@@ -120,7 +121,7 @@ Vagrant.configure("2") do |config|
             #SHELL
 	  box.vm.provision :ansible do |ansible|
 	    ansible.limit = "all"
-	    ansible.playbook = "ansible/CentralRouter.yml"
+	    ansible.playbook = "ansible/centralRouter.yml"
 	  end
 
         when "centralServer"
@@ -135,7 +136,7 @@ Vagrant.configure("2") do |config|
             #SHELL
 	  box.vm.provision :ansible do |ansible|
 	    ansible.limit = "all"
-	    ansible.playbook = "ansible/CentralServer.yml"
+	    ansible.playbook = "ansible/centralServer.yml"
 	  end
 
         end
