@@ -1,0 +1,26 @@
+---
+- name: install ipa client
+  yum: 
+    name: ipa-client
+    state: present
+- name: copy hosts
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+- name: copy resolv
+  template:
+    src: resolv.j2
+    dest: /etc/resolv.conf
+- name: set hostname
+  hostname:
+    name: "{{ hostname }}.{{ domain }}"
+- name: install client
+  shell: >
+    ipa-client-install -U 
+    --force-join 
+    --domain {{ domain }}
+    --principal admin@{{ realm }}
+    --password {{ password }}
+    --server centralserver.{{ domain }}
+    --realm {{ realm }}
+    --mkhomedir

@@ -1,0 +1,5 @@
+---
+domain: mydomain.local
+realm: MYDOMAIN.LOCAL
+ipa_server: 192.168.159.131
+password: 123456789
