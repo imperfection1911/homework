@@ -1,0 +1,28 @@
+---
+ - name: Update packages
+   yum:
+     name: '*'
+     state: latest
+ 
+ - name: install epel
+   yum:
+     name: epel-release
+     state: present
+
+ - name: install usefull tools
+   yum:
+     name: "{{ item }}"
+     state: latest
+   with_items: "{{ tools }}"
+
+ # i know, i do wrong))
+ - name: set SeLinux to permissive mode
+   selinux:
+     policy: targeted
+     state: permissive
+   when: "{{ use_selinux }}" == 0
+
+ - name: configure sysctl
+   template:
+     src: sysctl.j2
+     dest: /etc/sysctl.conf
