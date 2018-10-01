@@ -1,4 +1,0 @@
----
- - name: apply_sysctl
-   sysctl:
-     reload: yes

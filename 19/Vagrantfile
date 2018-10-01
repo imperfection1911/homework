@@ -28,6 +28,9 @@ Vagrant.configure("2") do |config|
 	      mkdir -p ~root/.ssh
               cp ~vagrant/.ssh/auth* ~root/.ssh
   	  SHELL
+          box.vm.provision :ansible do |ansible|
+            ansible.limit = "all"
+            ansible.playbook = "performance.yml"
 
       end
   end

@@ -1,6 +1,6 @@
 # Configuration file for runtime kernel parameters.
 # See sysctl.conf(5) for more information.
-
+net.ipv4.tcp_fin_timeout = 10
 net.ipv4.tcp_syncookies = 1
 vm.swappiness = 1
 vm.vfs_cache_pressure = 50
@@ -13,3 +13,4 @@ net.ipv4.tcp_keepalive_time = 1800
 net.ipv4.tcp_max_tw_buckets = 2000000
 net.ipv4.tcp_fin_timeout = 10
 net.ipv4.tcp_tw_reuse = 1
+net.ipv4.icmp_echo_ignore_broadcasts = 1

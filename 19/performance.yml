@@ -1,0 +1,5 @@
+- hosts: otuslinux
+  user: root
+  become: yes
+  roles:
+    - performance

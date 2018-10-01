@@ -28,3 +28,17 @@
      dest: /etc/sysctl.conf
    notify:
      - apply_sysctl
+
+ - name: configure ssh
+   template:
+     src: sshd_config.j2
+     dest: /etc/ssh/sshd_config
+   notify:
+     - restart_ssh
+
+ - name: disable firewalld
+   systemd:
+     name: firewalld
+     state: stopped
+     masked: yes
+     enabled: no
