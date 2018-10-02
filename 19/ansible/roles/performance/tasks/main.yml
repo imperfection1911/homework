@@ -20,7 +20,7 @@
    selinux:
      policy: targeted
      state: permissive
-   when: "{{ use_selinux }}" == 0
+   #when: "{{ use_selinux }}" == 0
 
  - name: configure sysctl
    template:
@@ -34,11 +34,11 @@
      src: sshd_config.j2
      dest: /etc/ssh/sshd_config
    notify:
-     - restart_ssh
+     - restart_sshd
 
- - name: disable firewalld
-   systemd:
-     name: firewalld
-     state: stopped
-     masked: yes
-     enabled: no
+# - name: disable firewalld
+#   systemd:
+#     name: firewalld
+#     state: stopped
+#     masked: yes
+#     enabled: no

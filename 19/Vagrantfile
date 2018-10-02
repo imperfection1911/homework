@@ -30,7 +30,7 @@ Vagrant.configure("2") do |config|
   	  SHELL
           box.vm.provision :ansible do |ansible|
             ansible.limit = "all"
-            ansible.playbook = "performance.yml"
+            ansible.playbook = "ansible/performance.yml"
 
       end
   end

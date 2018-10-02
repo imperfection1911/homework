@@ -1,15 +1,17 @@
 ---
-use_selinux=0
+use_selinux: 0
 
 tools:
   - bind-utils
   - mlocate
   - git
   - tcpdump
-  - lsof
   - net-tools
   - iptables-services
   - lsof
   - curl
-  - python36
+  - python34
   - libselinux-python
+  - vim
+  - iotop
+  - smartmontools
