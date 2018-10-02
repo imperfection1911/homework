@@ -20,7 +20,7 @@
    selinux:
      policy: targeted
      state: permissive
-   #when: "{{ use_selinux }}" == 0
+   when: use_selinux  == 0
 
  - name: configure sysctl
    template:

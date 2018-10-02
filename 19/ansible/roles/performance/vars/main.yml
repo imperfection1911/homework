@@ -1,5 +1,5 @@
 ---
-use_selinux: 0
+use_selinux: 1
 
 tools:
   - bind-utils
