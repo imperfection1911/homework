@@ -1,0 +1,31 @@
+---
+ - name: install epel
+   yum:
+     name: epel-release
+     state: present
+ - name: install nginx
+   yum:
+     name: nginx
+     state: present
+ - name: configure nginx for remote logging
+   template:
+     src: nginx.conf.j2
+     dest: /etc/nginx/nginx.conf
+ - name: configure audit rules
+   template:
+     src: audit.rules.j2
+     dest: /etc/audit.rules 
+ - name: configure audisp
+   template:
+     src: syslog.conf.j2
+     dest: /etc/audisp/plugins.d/syslog.conf
+   notify: 
+     - restart_auditd
+ - name: apply rules
+   shell: auditctl -R /etc/audit.rules
+ - name: configure rsyslog
+   template:
+     src: nginx_rsyslog.conf.j2
+     dest: /etc/rsyslog.d/nginx_rsyslog.conf
+   notify:
+     - restart_rsyslog

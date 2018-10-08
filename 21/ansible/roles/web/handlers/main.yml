@@ -1,0 +1,9 @@
+---
+- name: restart_auditd
+  systemd:
+    name: auditd
+    state: restarted
+- name: restart_rsyslog
+  systemd:
+    name: rsyslog
+    state: restarted
