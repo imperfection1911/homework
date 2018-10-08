@@ -1,0 +1,6 @@
+---
+hosts: log
+user: root
+become: yes
+roles:
+  - log

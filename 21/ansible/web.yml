@@ -1,0 +1,6 @@
+---
+hosts: web
+user: root
+become: yes
+roles:
+  - web
