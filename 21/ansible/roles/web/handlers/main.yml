@@ -1,8 +1,6 @@
 ---
 - name: restart_auditd
-  systemd:
-    name: auditd
-    state: restarted
+  shell: /sbin/service auditd restart
 - name: restart_rsyslog
   systemd:
     name: rsyslog

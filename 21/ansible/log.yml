@@ -1,6 +1,6 @@
 ---
-hosts: log
-user: root
-become: yes
-roles:
-  - log
+- hosts: log
+  user: root
+  become: yes
+  roles:
+    - log

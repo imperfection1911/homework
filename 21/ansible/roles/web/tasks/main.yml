@@ -3,6 +3,18 @@
    yum:
      name: epel-release
      state: present
+ - name: install libselinux
+   yum:
+     name: libselinux-python
+     state: present
+ - name: update rsyslog
+   yum:
+     name: rsyslog
+     state: latest
+ - name: disable selinux
+   selinux:
+     policy: targeted
+     state: permissive   
  - name: install nginx
    yum:
      name: nginx
@@ -29,3 +41,7 @@
      dest: /etc/rsyslog.d/nginx_rsyslog.conf
    notify:
      - restart_rsyslog
+ - name: start nginx
+   systemd:
+     name: nginx
+     state: started
