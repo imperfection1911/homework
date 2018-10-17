@@ -1,0 +1,27 @@
+---
+ - name: epel
+   yum:
+     name: epel-release
+     state: installed
+ 
+ - name: nginx
+   yum:
+     name: nginx
+     state: installed
+
+ - name: copy conf
+   template:
+     src: nginx.conf.j2
+     dest: /etc/nginx/nginx.conf
+
+ - name: create protected
+   file:
+     path: /usr/share/nginx/html/protect
+     state: directory
+ 
+ - name: copy html
+   template:
+     src: index.html.j2
+     dest: /usr/share/nginx/html/protect/index.html
+   notify:
+     - restart_nginx

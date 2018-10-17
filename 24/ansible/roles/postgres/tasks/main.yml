@@ -1,0 +1,30 @@
+---
+ - name: install epel
+   yum:
+     name: epel-release
+     state: present
+ - name: set rpm for postgres 10
+   set_fact:
+     postgres_rpm = pgdg-centos10-10-2.noarch.rpm
+   when:
+     - version == '10.2'
+ - name: set rpm for postgres 9
+   set_fact:
+     postgres_rpm = pgdg-centos96-9.6-3.noarch.rpm
+   when:
+     - version == '9.6'
+ - name: copy rpm on host
+   copy:
+     src: "{{ postgres_rpm }}"
+     dest: /tmp/
+ - name: install postgres repo
+   yum:
+     name: /tmp/"{{ postgres_rpm }}"
+     state: present
+ - name: install postgres server
+   yum:
+     name: postgres1l"{{ version  }}"-server
+     state: present
+ - name: set postgres 10 variables
+   set_fact:
+     posgres_
