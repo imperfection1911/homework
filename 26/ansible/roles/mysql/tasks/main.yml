@@ -1,0 +1,43 @@
+---
+ - name: copy repo
+   copy:
+     src: mariadb.repo
+     dest: /etc/yum.repos.d/
+
+ - name: install epel
+   yum:
+     name: epel-release
+     state: present
+# этот сраный вагрант уже заебал своими глюками. пиздец как долго ставится мускуль через yum.
+
+ - name: sdsd
+   shell: yum -y install mariadb-server
+ - name: install packages
+   yum:
+     name: "{{ item  }}"
+     state: present
+     disable_gpg_check: yes
+   with_items: "{{ packages }}"
+ 
+ - name: run mysql
+   systemd:
+     name: mariadb
+     state: started
+ 
+ - name: install 
+   pip:
+     name: pexpect
+
+ - name: run secure installation
+   expect:
+     command: mysql_secure_installation
+     responses:
+       'Enter current password for root \(enter for none\):': "\n"
+       'Set root password\? \[Y\/n\]:': 'y'
+       'New password:': "{{ password }}"
+       'Re-enter new password:': "{{ password }}"
+       'Remove anonymous users\? \[Y\/n\]:': 'y'
+       'Disallow root login remotely\? \[Y\/n\]:': 'y'
+       'Remove test database and access to it\? \[Y\/n\]:': 'y'
+       'Reload privilege tables now\? \[Y\/n\]:': 'y'
+

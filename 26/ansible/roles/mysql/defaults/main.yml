@@ -1,0 +1,6 @@
+---
+ packages:
+#   - mariadb-server
+   - python2-pip
+ 
+ password: 1qaz2wsx

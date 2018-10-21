@@ -1,0 +1,13 @@
+---
+ - hosts: slave
+   user: root
+   become: true
+   vars:
+     mariadb_bind_address: '0.0.0.0'
+     mariadb_root_password: '1qaz2wsx'
+     mariadb_databases:
+       - name: bet
+         init_script: /home/toha/homework/26/bet-4560-4974c3.dmp
+   roles:
+     - ansible-role-mariadb-master
+ 
