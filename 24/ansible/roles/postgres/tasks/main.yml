@@ -3,28 +3,71 @@
    yum:
      name: epel-release
      state: present
- - name: set rpm for postgres 10
+ - name: set variables for postgres 10
    set_fact:
-     postgres_rpm = pgdg-centos10-10-2.noarch.rpm
+     postgres_rpm: pgdg-centos10-10-2.noarch.rpm
+     postgres_packet: postgresql10-server.x86_64
+     postgres_init_command: /usr/pgsql-10/bin/postgresql-10-setup initdb
+     postgres_systemd_service: postgresql-10
+     postgres_data_folder: /var/lib/pgsql/10/data/
    when:
-     - version == '10.2'
- - name: set rpm for postgres 9
+     - version == 10.2
+ - name: set variables for postgres 9
    set_fact:
-     postgres_rpm = pgdg-centos96-9.6-3.noarch.rpm
+     postgres_rpm: pgdg-centos96-9.6-3.noarch.rpm
+     postgres_packet: postgresql96-server.x86_64
+     postgres_init_command: /usr/pgsql-9.6/bin/postgresql96-setup initdb
+     postgres_systemd_service: postgresql-9.6
+     postgres_data_folder: /var/lib/pgsql/9.6/data/
    when:
-     - version == '9.6'
+     - version == 9.6
+ - debug: var=postgres_rpm
  - name: copy rpm on host
    copy:
      src: "{{ postgres_rpm }}"
      dest: /tmp/
  - name: install postgres repo
    yum:
-     name: /tmp/"{{ postgres_rpm }}"
+     name: /tmp/{{ postgres_rpm }}
      state: present
  - name: install postgres server
    yum:
-     name: postgres1l"{{ version  }}"-server
+     name: "{{ postgres_packet }}"
      state: present
- - name: set postgres 10 variables
-   set_fact:
-     posgres_
+ - name: init db
+   shell: "{{ postgres_init_command }}"
+ - name: download pg_hba 9.6
+   template:
+     src: pg_hba.conf.j2
+     dest: /var/lib/pgsql/9.6/data/pg_hba.conf
+  # template не поддерживает переменные   
+  #  dest: "{{ postgres_data_folder }}"/pg_hba.conf
+   when:
+      - version == 9.6
+ - name: download postgresql.conf 9.6
+   template:
+     src: postgresql.conf.j2
+     dest: /var/lib/pgsql/9.6/data/postgresql.conf
+     # dest: "{{ postgres_data_folder }}"/postgresql.conf
+   when:
+     - version == 9.6
+ - name: download pg_hba 10
+   template:
+     src: pg_hba.conf.j2
+     dest: /var/lib/pgsql/10/data/pg_hba.conf
+  # template не поддерживает переменные   
+  #  dest: "{{ postgres_data_folder }}"/pg_hba.conf
+   when:
+      - version == 10.2
+ - name: download postgresql.conf 10
+   template:
+     src: postgresql.conf.j2
+     dest: /var/lib/pgsql/10/data/postgresql.conf
+     # dest: "{{ postgres_data_folder }}"/postgresql.conf
+   when:
+     - version == 10.2
+
+ - name: start postgresql
+   systemd:
+     name: "{{ postgres_systemd_service }}"
+     state: started
