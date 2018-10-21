@@ -1,23 +1,23 @@
 Поднимаю два mariad сервера. дамп проливается из плейбука
 
 На мастере в конфиг [mysqld] прописывается
-
+```
 server-id = 1
 log_bin = /var/lib/mysql/mysql-bin.log
 binlog_do_db = bet
-
+```
 на слейве
-
+```
 server-id = 2
 binlog_do_db = bet
 replicate-ignore-table = bet.events_on_demand
 replicate-ignore-table = bet.v_same_event
-
+```
 Создаю юзера
-
+```
 MariaDB [(none)]> GRANT replication slave ON *.* TO "replication"@"192.168.11.3" IDENTIFIED BY "1qaz2wsx";
 Query OK, 0 rows affected (0.001 sec)
-
+```
 и flush privileges;
 
 перезапускаю сервис на слейве и мастере
@@ -25,7 +25,7 @@ Query OK, 0 rows affected (0.001 sec)
 systemctl restart mariadb
 
 смотрю статус мастера
-
+```
 MariaDB [(none)]> show master status;
 +------------------+----------+--------------+------------------+
 | File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
@@ -33,10 +33,10 @@ MariaDB [(none)]> show master status;
 | mysql-bin.000001 |      328 | bet          |                  |
 +------------------+----------+--------------+------------------+
 1 row in set (0.000 sec)
-
+```
 Настраиваем на слейве
 
-
+```
 MariaDB [(none)]> CHANGE MASTER TO MASTER_HOST = "192.168.11.2", MASTER_USER = "replication", MASTER_PASSWORD = "1qaz2wsx", MASTER_LOG_FILE = "mysql-bin.000003", MASTER_LOG_POS = 385;
 Query OK, 0 rows affected (0.009 sec)
 
@@ -99,10 +99,10 @@ MariaDB [(none)]> show slave status\G
 Slave_Non_Transactional_Groups: 0
     Slave_Transactional_Groups: 0
 1 row in set (0.000 sec)
-
+```
 
 проверяем. инсертим на мастере
-
+```
 MariaDB [bet]> insert into bookmaker values (NULL, 'example');
 Query OK, 1 row affected (0.021 sec)
 
@@ -130,5 +130,5 @@ MariaDB [bet]> select * from bookmaker order by id desc limit 1;
 |  7 | example        |
 +----+----------------+
 1 row in set (0.000 sec)
-
+```
 все работает
