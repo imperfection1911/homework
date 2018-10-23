@@ -88,3 +88,4 @@ host    all             all             0.0.0.0/0	        md5
 #local   replication     postgres                                peer
 #host    replication     postgres        127.0.0.1/32            ident
 #host    replication     postgres        ::1/128                 ident
+host	 replication 	 replica	 {{ slave_ip }}/32	 md5

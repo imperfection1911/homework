@@ -1,8 +1,16 @@
 ---
+ - debug: var=postgres_role
  - name: install epel
    yum:
      name: epel-release
      state: present
+ - name: install common packages
+   yum:
+     name: python-pip
+     state: present
+ - name: install pip packages
+   pip:
+     name: psycopg2
  - name: set variables for postgres 10
    set_fact:
      postgres_rpm: pgdg-centos10-10-2.noarch.rpm
@@ -36,6 +44,17 @@
      state: present
  - name: init db
    shell: "{{ postgres_init_command }}"
+ - name: start postgres
+   systemd:
+     name: "{{ postgres_systemd_service }}"
+     state: started
+ - name: change postgres password
+   become: true
+   become_user: postgres
+   postgresql_user:
+     db: postgres
+     name: postgres
+     password: "{{ slave_password }}"
  - name: download pg_hba 9.6
    template:
      src: pg_hba.conf.j2
@@ -67,7 +86,47 @@
    when:
      - version == 10.2
 
- - name: start postgresql
+ - name: restart postgresql
+   systemd:
+     name: "{{ postgres_systemd_service }}"
+     state: restarted
+
+ - name: create replica
+   become: true
+   become_user: postgres
+   postgresql_user:
+     db: postgres
+     name: replica
+     password: "{{ slave_password }}" 
+     role_attr_flags: LOGIN,REPLICATION
+     login_password: "{{ slave_password }}"
+   when:
+     - postgres_role == 'master'
+ 
+ - name: stop postgres on slave
+   systemd:
+     name: "{{ postgres_systemd_service }}"
+     state: stopped
+   when: 
+     - postgres_role == 'slave'
+
+ - name: clean data
+   file:
+     path: "{{ postgres_data_folder }}"
+     state: absent
+   when:
+     - postgres_role == 'slave'
+
+ - name: copy from master
+   become: true
+   become_user: postgres
+   shell: export PGPASSWORD="{{ slave_password }}" && pg_basebackup -R -P -X stream -c fast -h {{ master_ip }} -U replica -D {{ postgres_data_folder }}
+   when:
+     - postgres_role == 'slave'
+ 
+ - name: start slave
    systemd:
      name: "{{ postgres_systemd_service }}"
      state: started
+   when: 
+     - postgres_role == 'slave'
