@@ -1,0 +1,19 @@
+---
+ - hosts: nfsClient
+   become: yes
+   user: root
+   vars:
+     server_ip: 192.168.11.2
+   tasks: 
+   - name: create mountpoint
+     file:
+       path: /mnt/shared_folder
+       state: directory
+
+   - name: edit fstab
+     lineinfile:
+       path: /etc/fstab
+       line: '{{ server_ip }}:/shared_folder /mnt/shared_folder nfs  proto=udp,intr,noatime,nolock,nfsvers=3,async 0 0'
+   
+   - name: mount all
+     shell: mount -a

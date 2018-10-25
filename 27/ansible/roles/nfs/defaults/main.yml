@@ -1,0 +1,11 @@
+---
+ ports:
+   - 111
+   - 2049
+   - 20048
+ 
+ clients: 192.168.11.3
+
+ services:
+   - nfs
+   - rpcbind

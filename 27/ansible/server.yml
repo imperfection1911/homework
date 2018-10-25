@@ -1,0 +1,6 @@
+---
+ - hosts: nfsServer
+   become: yes
+   user: root
+   roles:
+     - nfs

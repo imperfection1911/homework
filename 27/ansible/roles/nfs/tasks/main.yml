@@ -1,0 +1,57 @@
+---
+ - name: copy exports
+   template:
+     src: exports.j2
+     dest: /etc/exports
+
+ - name: create folder
+   file:
+     path: /shared_folder/upload
+     state: directory
+     mode: 0766
+
+ - name: copy nfs config
+   template:
+     src: nfs.conf.j2
+     dest: /etc/nfs.conf
+
+ - name: copy hosts.allow
+   template:
+     src: hosts.allow.j2
+     dest: /etc/hosts.allow
+
+ - name: restart services
+   systemd:
+     name: "{{ item }}"
+     state: restarted
+   with_items: "{{ services }}"
+
+ - name: export fs
+   shell: exportfs -r
+
+ - name: open ssh port
+   iptables:
+     chain: INPUT
+     protocol: tcp
+     destination_port: 22
+     jump: ACCEPT
+ 
+ - name: open udp ports
+   iptables:
+     chain: INPUT
+     protocol: udp
+     destination_port: "{{ item }}"
+     jump: ACCEPT
+   with_items: "{{ ports }}"
+
+ - name: allow related and established connections
+   iptables:
+     chain: INPUT
+     ctstate: ESTABLISHED,RELATED
+     jump: ACCEPT
+
+ - name: enable firewall
+   iptables:
+     chain: INPUT
+     jump: DROP
+     protocol: tcp
