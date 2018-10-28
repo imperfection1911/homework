@@ -1,0 +1,4 @@
+---
+ configs:
+   - master.cf
+   - main.cf

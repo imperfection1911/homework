@@ -1,0 +1,5 @@
+---
+ - name: restart
+   systemd:
+     name: dovecot
+     state: restarted

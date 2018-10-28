@@ -1,0 +1,7 @@
+---
+ - hosts: mail
+   become: yes
+   user: root
+   roles:
+     - postfix
+     - dovecot

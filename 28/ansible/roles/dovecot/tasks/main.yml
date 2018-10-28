@@ -1,0 +1,29 @@
+---
+ - name: install dovecot
+   yum:
+     name: dovecot
+     state: present
+
+ - name: copy config
+   template: 
+     src: dovecot.conf
+     dest: /etc/dovecot
+
+ - name: create domain directory
+   file:
+    path: /var/vmail/otuslinux.com
+    state: directory
+    mode: 0760
+    owner: vmail
+    group: vmail
+ 
+ - name: create user
+   template: 
+     src: users
+     dest: /etc/dovecot/users
+
+ - name: start dovecot
+   systemd: 
+     name: dovecot
+     state: restarted
+   
