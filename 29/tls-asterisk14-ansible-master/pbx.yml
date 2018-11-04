@@ -1,0 +1,12 @@
+---
+- hosts: aster
+  user: vagrant
+  become: yes
+  vars_prompt:
+    - name: "mysqlpass"
+      prompt: "enter mysqlpass:"
+    - name: "keypass"
+      prompt: "enter keypass"
+
+  roles:
+    - tls_asterisk
